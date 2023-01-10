@@ -1,10 +1,12 @@
+import {
+  PanelPlugin,
+  LogSystemAdapter,
+} from './../../DTCD-SDK';
+
 import pluginMeta from './Plugin.Meta';
 import PluginComponent from './PluginComponent.vue';
 
-import { PanelPlugin, LogSystemAdapter, EventSystemAdapter } from './../../DTCD-SDK';
-
 export class SVGPanel extends PanelPlugin {
-  #eventSystem;
   #vueComponent;
 
   static getRegistrationMeta() {
@@ -15,15 +17,14 @@ export class SVGPanel extends PanelPlugin {
     super();
 
     const logSystem = new LogSystemAdapter('0.5.0', guid, pluginMeta.name);
-    const eventSystem = new EventSystemAdapter('0.4.0', guid);
-
-    this.#eventSystem = eventSystem;
-    this.#eventSystem.registerPluginInstance(this, ['Clicked']);
 
     const { default: VueJS } = this.getDependence('Vue');
 
     const view = new VueJS({
-      data: () => ({ guid, logSystem, eventSystem }),
+      data: () => ({
+        guid,
+        logSystem,
+      }),
       render: h => h(PluginComponent),
     }).$mount(selector);
 
@@ -55,14 +56,6 @@ export class SVGPanel extends PanelPlugin {
         {
           component: 'title',
           propValue: 'Общие настройки',
-        },
-        {
-          component: 'text',
-          propName: 'title',
-          attrs: {
-            label: 'Отображаемый текст',
-            required: true,
-          },
         },
       ],
     };

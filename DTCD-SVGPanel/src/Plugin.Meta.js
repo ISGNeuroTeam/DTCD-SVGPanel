@@ -4,6 +4,6 @@ export default {
   version,
   type: 'panel',
   name: 'SVGPanel',
-  title: 'CSVG',
+  title: 'Визуализация - SVG',
   withDependencies: true,
 };

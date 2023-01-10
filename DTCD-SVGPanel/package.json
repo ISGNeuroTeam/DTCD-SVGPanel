@@ -1,7 +1,7 @@
 {
-  "name": "dtcd-button-panel",
-  "version": "0.3.0",
-  "description": "Panel plugin with button component",
+  "name": "dtcd-svg-panel",
+  "version": "0.1.0",
+  "description": "Panel plugin with SVG",
   "private": true,
   "homepage": "https://github.com/ISGNeuroTeam/DTCD-SVGPanel",
   "scripts": {

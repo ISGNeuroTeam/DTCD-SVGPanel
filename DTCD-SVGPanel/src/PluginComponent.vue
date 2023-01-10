@@ -1,38 +1,50 @@
 <template>
-  <div ref="container" class="container">
-    <base-button
-      ref="btn"
-      class="button"
-      @click="clickHandler"
-      v-text="title"
-    >
-    </base-button>
+  <div class="SVGPanel">
+    <div v-if="title" class="Header">
+      <div class="Title">{{ title }}</div>
+    </div>
+    <div class="Body">
+      <div class="SVGContainer" ref="csvg">
+        <div class="NoData">
+          <span class="FontIcon name_infoCircleOutline Icon"></span>
+          Нет данных для отображения
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'PluginComponent',
-  data: (self) => ({
-    guid: self.$root.guid,
-    logSystem: self.$root.logSystem,
-    eventSystem: self.$root.eventSystem,
-    title: 'Кнопка',
-  }),
+  data() {
+    return {
+      title: 'SVG',
+    };
+  },
   mounted() {
-    const parent = this.$refs.container.closest('.grid-stack-item-content');
-    parent.style.backgroundColor = 'transparent';
+    if (this.$refs.csvg) {
+      this.getSVG('well_dark_fixed.svg');
+    }
   },
   methods: {
-    clickHandler() {
-      this.eventSystem.publishEvent('Clicked');
-      this.logSystem.info(`Button[${this.guid}] clicked`);
-      this.logSystem.debug(`Button[${this.guid}] clicked`);
+    async getSVG(filename) {
+      const response = await this.$root.interactionSystem.GETRequest(`tmp_images/${filename}`);
+      if (response.status == 200 && response.data.indexOf('<svg') != -1) {
+        this.$refs.csvg.innerHTML = response.data;
+        const svg = this.$refs.csvg.querySelector('svg');
+        if (svg) {
+          svg.removeAttribute('width');
+          svg.removeAttribute('height');
+          svg.style.width = '100%';
+        }
+      }
     },
   },
 };
 </script>
 
-<style lang="sass" scoped>
-@import ./styles/component
+<style lang="scss" scoped>
+@import './styles/SVGPanel.scss';
 </style>
