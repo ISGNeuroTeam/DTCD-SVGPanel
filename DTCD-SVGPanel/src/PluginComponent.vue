@@ -24,6 +24,7 @@ export default {
       adaptiveImg: true,
       svgFileName: '',
       dataset: [],
+      cachedHtmlTags: new Map(),
     };
   },
   mounted() {
@@ -104,15 +105,20 @@ export default {
           clearInterval(interval);
 
           dataset.forEach((dataSetItem) => {
-            if (!dataSetItem.tagInSVG) {
-              dataSetItem.tagInSVG = this.$refs.svg.querySelector('#' + dataSetItem.id);
-              if (!dataSetItem.tagInSVG) return;
+            let tagInSVG = this.cachedHtmlTags.get(dataSetItem.id);
+            if (!tagInSVG) {
+              tagInSVG = this.$refs.svg.querySelector('#' + dataSetItem.id);
+              if (tagInSVG) {
+                this.cachedHtmlTags.set(dataSetItem.id, tagInSVG);
+              } else {
+                return;
+              }
             }
 
-            dataSetItem.tagInSVG.innerHTML = dataSetItem.tag_value;
+            tagInSVG.innerHTML = dataSetItem.tag_value;
             dataSetItem.fill
-              ? dataSetItem.tagInSVG.setAttribute('fill', dataSetItem.fill)
-              : dataSetItem.tagInSVG.removeAttribute('fill');
+              ? tagInSVG.setAttribute('fill', dataSetItem.fill)
+              : tagInSVG.removeAttribute('fill');
           });
         }
       }, 100);
