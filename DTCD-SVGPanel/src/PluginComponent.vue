@@ -49,8 +49,11 @@ export default {
         this.$refs.svg.style.height = newValue ? 'auto' : '';
       }
     },
-    dataset(newDataSet) {
-      this.renderDataSet(newDataSet);
+    dataset: {
+      handler(newDataSet) {
+        this.renderDataSet(newDataSet);
+      },
+      deep: true
     },
   },
   methods: {
