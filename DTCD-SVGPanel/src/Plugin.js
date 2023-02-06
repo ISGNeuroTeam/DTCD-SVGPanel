@@ -19,6 +19,7 @@ export class SVGPanel extends PanelPlugin {
   #dataSourceSystem;
   #dataSourceSystemGUID;
   #storageSystem;
+  #interactionSystem;
 
   #config = {
     isSettingsFromDatasource: false,
@@ -37,7 +38,7 @@ export class SVGPanel extends PanelPlugin {
     this.#id = `${pluginMeta.name}[${guid}]`;
 
     this.#logSystem = new LogSystemAdapter('0.5.0', guid, pluginMeta.name);
-    const interactionSystem = new InteractionSystemAdapter('0.4.0');
+    this.#interactionSystem = new InteractionSystemAdapter('0.4.0');
     this.#eventSystem = new EventSystemAdapter('0.4.0', guid);
     this.#eventSystem.registerPluginInstance(this);
     this.#storageSystem = new StorageSystemAdapter('0.5.0');
@@ -53,7 +54,7 @@ export class SVGPanel extends PanelPlugin {
       data: () => ({
         guid,
         logSystem: this.#logSystem,
-        interactionSystem,
+        interactionSystem: this.#interactionSystem,
       }),
       render: h => h(PluginComponent),
     }).$mount(selector);
@@ -180,6 +181,22 @@ export class SVGPanel extends PanelPlugin {
           component: 'divider',
         },
         {
+          component: 'file-loader',
+          propName: 'newFile',
+          attrs: {
+            label: 'Загрузка новой SVG картинки',
+            droppable: true,
+            accept: 'image/svg+xml',
+          },
+          handler: {
+            event: 'input',
+            callback: this.#handlerFileLoaderInput.bind(this),
+          },
+        },
+        {
+          component: 'divider',
+        },
+        {
           component: 'datasource',
           propName: 'dataSource',
           attrs: {
@@ -195,7 +212,10 @@ export class SVGPanel extends PanelPlugin {
   getState() {
     return Object.assign(
       this.getPluginConfig(),
-      { dataset: this.#vueComponent.dataset },
+      { 
+        dataset: this.#vueComponent.dataset,
+        svgFileName: this.#vueComponent.svgFileName,
+      },
     );
   }
 
@@ -206,11 +226,21 @@ export class SVGPanel extends PanelPlugin {
 
     const vueNamesFields = [
       'dataset',
+      'svgFileName',
     ];
 
     for (const [prop, value] of Object.entries(newState)) {
       if (!vueNamesFields.includes(prop)) continue;
       this.#vueComponent[prop] = value;
     }
+  }
+
+  #handlerFileLoaderInput = async (event) => {
+    if (!event?.currentTarget?.value?.length) return;
+
+    const formData = new FormData();
+    formData.append('file', event.currentTarget.value[0]);
+
+    const response = await this.#interactionSystem.POSTRequest(`/api/load/svg`, formData);
   }
 }
