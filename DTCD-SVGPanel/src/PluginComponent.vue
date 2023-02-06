@@ -60,7 +60,7 @@ export default {
     async getSVG(filename) {
       if (!filename) return false;
 
-      const response = await this.$root.interactionSystem.GETRequest(`tmp_images/${filename}`);
+      const response = await this.$root.interactionSystem.GETRequest(`svg/${filename}`);
       if (response?.data?.indexOf('<svg') != -1) {
         this.$refs.csvg.innerHTML = response.data;
         this.$refs.svg = this.$refs.csvg.querySelector('svg');
