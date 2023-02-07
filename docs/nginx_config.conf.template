@@ -1,0 +1,7 @@
+location ^~ /svg {
+  alias /opt/otp/static/svg;
+  sendfile on;
+  sendfile_max_chunk 1m;
+  tcp_nopush on;
+  try_files $uri 404;
+}
