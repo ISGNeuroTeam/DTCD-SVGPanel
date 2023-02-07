@@ -19,6 +19,10 @@
     }
   }
 
+  .Body {
+    overflow-x: auto;
+  }
+
   .NoData {
     display: flex;
     align-items: center;
